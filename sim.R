@@ -13,7 +13,7 @@ init_para_est <- init_est(dat_df = data_df, mean_thresholdPV = 0.05, var_thresho
 niter<-1000
 indep_para_est <- runEM(dat_df = data_df, n1 = n1, n2 = n2, init_para_est= init_para_est, niter = niter)
 
-emissions <- emission_probs(indep_para_est[5], indep_para_est[6], indep_para_est[7], indep_para_est[8], example_data, n1 = n1, n2 = n2)
+emissions <- emission_probs(indep_para_est[5], indep_para_est[6], indep_para_est[7], indep_para_est[8], sim_data, n1 = n1, n2 = n2)
 head(emissions, 10)
 
 
