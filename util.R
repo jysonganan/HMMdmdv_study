@@ -10,30 +10,40 @@ check_convergence <- function(input_data, n, n1, n2, niter = 1000){
   #result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], train = FALSE)
 }
 
-## runHMM   return(list(alpha, beta, iter, initPI, Tmat))
 
-posterior_inference_FDR <- function(alpha, beta){
-  
-}
+HMM_resList <- runHMM_iters(emissions)
 
-
-  
-posterior_inference <- function(alpha, beta, Z = NULL, train = TRUE){
-    pos_state_prob <- alpha * beta
-    pos_state <- apply(pos_state_prob, 1, which.max)
-    print(table(pos_state))
-    if (train == TRUE){
-      print(table(Z))
-      acc = sum(pos_state == Z)/length(Z)
-      return(list(pos_state, acc))
+## differential mean z=1,3 vs z = 2,4
+posterior_inference_FDR <- function(gamma, fdr_threshold = 0.1){
+  pos_state_prob <- gamma
+  pos_prob_null <- apply(pos_state_prob, 1, function(x){return(x[1]+x[3])})
+  k = min(pos_prob_null)
+  while (k <= 1){
+    decision <- sum(pos_prob_null[pos_prob_null <= k])/sum(pos_prob_null <= k)
+    if (decision <= fdr_threshold){
+      k <- k + 0.01
     }
     else{
-      return(pos_state)
+      break
     }
   }
+  rejection_bool <- (pos_prob_null <= k)
+  return(list(rejection_bool, k)) ## true: rejection list
+}
+
+post_beta <- posterior_inference_FDR(HMM_resList[[6]], fdr_threshold = 0.1)
+## evaluation
+TP <- sum((Z == 2) & (Z == 4) & (post_beta[[1]]))
+FN <- sum((Z == 2) & (Z == 4) & (!post_beta[[1]]))
+Sensitivity <- TP/(TP+FN) #TPR = TP/(TP+FN)
 
 
-## rewrite runHMM
+
+
+
+############################################################
+#### iterations, also output gamma = posterior probabilities
+## rewrite runHMM--return(list(alpha, beta, iter, initPI, Tmat))
 runHMM_iters <- function(emissions){
   post <- emissions
   initPI <- rep(0.25, 4)
@@ -47,6 +57,9 @@ runHMM_iters <- function(emissions){
   gamma <- matrix(NA, n, 4)
   bigamma <- array(NA, c(4, 4, n))
   
+  initPI_iters <- list()
+  Tmat_iters <- list()
+  logProb_iters <- rep(NA, niter)
   
   while ((iter == 0 | logProb > oldlogProb) & iter <= niter){
     
@@ -140,6 +153,12 @@ runHMM_iters <- function(emissions){
     }
     logProb = -logProb
     iter <- iter + 1
+    
+    ####
+    initPI_iters[[iter]] <- initPI
+    Tmat_iters[[iter]] <- Tmat
+    logProb_iters[iter] <- logProb
+    
   }
   print('HMM initial state probability estimate:')
   print(initPI)
@@ -147,5 +166,6 @@ runHMM_iters <- function(emissions){
   print(Tmat)
   print('HMM iterations:')
   print(iter)
-  return(list(alpha, beta, iter, initPI, Tmat))
+  return(list(alpha, beta, iter, initPI, Tmat, gamma, initPI_iters, Tmat_iters, logProb_iters))
 }
+
