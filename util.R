@@ -1,5 +1,3 @@
-library(HMMdmdv)
-
 check_convergence <- function(input_data, n, n1, n2, niter = 1000){
   data_df <- remove_case3(dat = input_data, mean_thresholdPV = 0.1, var_thresholdPV = 0.05, n1 = n1, n2 = n2)
   init_para_est <- init_est(dat_df = data_df, mean_thresholdPV = 0.05, var_thresholdPV = 0.1, n1 = n1, n2 = n2, n = n)
@@ -10,8 +8,6 @@ check_convergence <- function(input_data, n, n1, n2, niter = 1000){
   #result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], train = FALSE)
 }
 
-
-HMM_resList <- runHMM_iters(emissions)
 
 ## differential mean z=1,3 vs z = 2,4
 posterior_inference_FDR <- function(gamma, fdr_threshold = 0.1){
@@ -30,14 +26,6 @@ posterior_inference_FDR <- function(gamma, fdr_threshold = 0.1){
   rejection_bool <- (pos_prob_null <= k)
   return(list(rejection_bool, k)) ## true: rejection list
 }
-
-post_beta <- posterior_inference_FDR(HMM_resList[[6]], fdr_threshold = 0.1)
-## evaluation
-TP <- sum((Z == 2) & (Z == 4) & (post_beta[[1]]))
-FN <- sum((Z == 2) & (Z == 4) & (!post_beta[[1]]))
-Sensitivity <- TP/(TP+FN) #TPR = TP/(TP+FN)
-
-
 
 
 
