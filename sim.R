@@ -93,7 +93,7 @@ for (i in 1:n){
   var0_sqErr[i] <- (indep_para_est[6] - true_para[[2]])^2
   k0_sqErr[i] <- (indep_para_est[7] - true_para[[3]])^2
   mu0_sqErr[i] <- (indep_para_est[8] - true_para[[4]])^2
-  tran_prob_sqErr[i] <- (HMM_resList[[5]] - true_para[[6]])^2
+  tran_prob_sumsqErr[i] <- sum((HMM_resList[[5]] - true_para[[6]])^2)
   
   ## 1. accuracy concordance (clustering) (compare with DM+DV test threholds for 4 states)
   result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], Z = sim_state, train = TRUE)
