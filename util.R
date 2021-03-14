@@ -29,6 +29,77 @@ posterior_inference_FDR <- function(gamma, fdr_threshold = 0.1){
 
 
 
+#### data simulation (non-model setting)
+
+library(MCMCpack)
+truePara_generation_1 <- function(n_state, pi1, p){
+  initProb = c(pi1, (1-pi1)/3, (1-pi1)/3, (1-pi1)/3)
+  transProb = matrix(NA, n_state, n_state)
+  for (i in 1:n_state){transProb[i,i] <- p}
+  
+  for (i in 1:4){
+    otherProb = rdirichlet(1, c(1,1,1))
+    if(i == 1){
+      transProb[i,2:4] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 2){
+      transProb[i,c(1,3,4)] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 3){
+      transProb[i,c(1,2,4)] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 4){
+      transProb[i,1:3] = otherProb[1,] * (1 - transProb[i,i])
+    }
+  }
+  
+  return(list(initProb, transProb))
+}
+
+
+
+data_generation_1 <- function(d, mu0, sigma0, sigma, n, n1, n2, initProb, transProb){
+  X<-matrix(NA, n, n1)
+  Y<-matrix(NA, n, n2)
+  Z<-rep(NA,n)
+  
+  Z[1]<-sample(1:4, 1, prob = initProb)
+  
+  for (i in 2:n){
+    Z[i]<-sample(1:4, 1, prob = transProb[Z[i-1],])
+  }
+
+
+  for (i in 1:n){
+    mu <- rnorm(1, mu0, sqrt(sigma0))
+    if(Z[i]==1)
+    { 
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu,sqrt(sigma))
+    }
+    else if(Z[i]==2){
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu + d,sqrt(sigma))
+    }
+    else if(Z[i]==3){
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu,sqrt(10*sigma))
+    }
+    else{
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu + d,sqrt(10*sigma))
+    }
+  }
+
+  A<-cbind(X,Y)
+  print('data generated!')
+  return(list(A, Z))
+}
+  
+
+
+
+
 ############################################################
 #### iterations, also output gamma = posterior probabilities
 ## rewrite runHMM--return(list(alpha, beta, iter, initPI, Tmat))
