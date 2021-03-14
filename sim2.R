@@ -19,7 +19,7 @@ p = 0.2 #0.5, 0.8
 
 mu0 = 2
 sigma0 = 0.35
-sigma = 0.1
+sigma = 0.1 #actually sigma squared
 
 library(MCMCpack)
 truePara_generation_1 <- function(n_state, pi1, p){
@@ -61,26 +61,23 @@ data_generation_1 <- function(d, mu0, sigma0, sigma, n, n1, n2, initProb, transP
 
 
   for (i in 1:n){
+    mu <- rnorm(1, mu0, sqrt(sigma0))
     if(Z[i]==1)
     { 
-      mu <- rnorm(1, mu0, sigma0)
       X[i,]<-rnorm(n1,mu,sqrt(sigma))
       Y[i,]<-rnorm(n2,mu,sqrt(sigma))
     }
     else if(Z[i]==2){
-      mu <- rnorm(1, mu0, sigma0)
       X[i,]<-rnorm(n1,mu,sqrt(sigma))
       Y[i,]<-rnorm(n2,mu + d,sqrt(sigma))
     }
     else if(Z[i]==3){
-      mu <- rnorm(1, mu0, sigma0)
       X[i,]<-rnorm(n1,mu,sqrt(sigma))
       Y[i,]<-rnorm(n2,mu,sqrt(10*sigma))
     }
     else{
-      mu <- rnorm(1, mu0, sigma0)
-      X[i,]<-rnorm(n1,mu,sqrt(sigma1))
-      Y[i,]<-rnorm(n2,mu+d,sqrt(10*sigma2))
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu + d,sqrt(10*sigma))
     }
   }
 
@@ -113,7 +110,7 @@ Specificity_tab<- matrix(NA, nsim, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, nsim)
+cluster_concordance_acc <- rep(NA, nsim)
 
 
 
@@ -129,10 +126,6 @@ for (i in 1:nsim){
   
   
   
-  
-  
-  
-  
   data_df <- remove_case3(dat = sim_data, mean_thresholdPV = 0.1, var_thresholdPV = 0.05, n1 = n1, n2 = n2)
   init_para_est <- init_est(dat_df = data_df, mean_thresholdPV = 0.05, var_thresholdPV = 0.1, n1 = n1, n2 = n2, n = n)
   
@@ -143,13 +136,7 @@ for (i in 1:nsim){
   
   HMM_resList <- runHMM_iters(emissions)
   
-  ## MSE parameter estimates
-  nu0_sqErr[i] <- (indep_para_est[5] - true_para[[1]])^2
-  var0_sqErr[i] <- (indep_para_est[6] - true_para[[2]])^2
-  k0_sqErr[i] <- (indep_para_est[7] - true_para[[3]])^2
-  mu0_sqErr[i] <- (indep_para_est[8] - true_para[[4]])^2
-  tran_prob_sumsqErr[i] <- sum((HMM_resList[[5]] - true_para[[6]])^2)
-  
+
   ## 1. accuracy concordance (clustering) (compare with DM+DV test threholds for 4 states)
   result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], Z = sim_state, train = TRUE)
   cluster_concordance_acc[i] <- result[[2]]
@@ -241,6 +228,6 @@ for (i in 1:nsim){
 }
 
 
-save("significantList_length", "FDR_tab", "FNDR_tab", "Sensitivity_tab", "Specificity_tab", "cluster_concordance_acc",
-     "nu0_sqErr", "var0_sqErr", "k0_sqErr", "mu0_sqErr", "tran_prob_sumsqErr", file = "/gpfs/scratch/jusong/HMMsim_5.RData")
+save("significantList_length", "FDR_tab", "FNDR_tab", "Sensitivity_tab", "Specificity_tab", "cluster_concordance_acc", 
+     file = "/gpfs/scratch/jusong/HMMsim_nonmodel.RData")
 
