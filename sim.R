@@ -21,12 +21,6 @@ HMM_resList <- runHMM_iters(emissions)
 post_beta <- posterior_inference_FDR(HMM_resList[[6]], fdr_threshold = 0.1)
 
 
-## evaluation
-TP <- sum((Z == 2) & (Z == 4) & (post_beta[[1]]))
-FN <- sum((Z == 2) & (Z == 4) & (!post_beta[[1]]))
-Sensitivity <- TP/(TP+FN) #TPR = TP/(TP+FN)
-
-
 
 ## max posterior prob; clustering
 result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], train = FALSE)
