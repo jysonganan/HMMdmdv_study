@@ -192,3 +192,32 @@ for (i in 1:n){
 save("significantList_length", "FDR_tab", "FNDR_tab", "Sensitivity_tab", "Specificity_tab", "cluster_concordance_acc",
      "nu0_sqErr", "var0_sqErr", "k0_sqErr", "mu0_sqErr", "tran_prob_sumsqErr", file = "/gpfs/scratch/jusong/HMMsim_1.RData")
 
+
+
+## sim 2
+set.seed(5)
+n = 5000
+n1 = 30
+n2 = 30
+fdr = 0.1
+
+## sim 3
+set.seed(4)
+n = 10000
+n1 = 30
+n2 = 30
+fdr = 0.1
+
+## sim 4
+set.seed(7)
+n = 5000
+n1 = 15
+n2 = 15
+fdr = 0.1
+
+## sim 5
+set.seed(3)
+n = 5000
+n1 = 100
+n2 = 100
+fdr = 0.1
