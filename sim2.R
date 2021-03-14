@@ -7,9 +7,9 @@ library(locfdr)
 library(NHMMfdr)
 
 set.seed(3)
-n = 5000
-n1 = 100
-n2 = 100
+n = 1000
+n1 = 15
+n2 = 15
 fdr = 0.1
 nsim = 100
 
