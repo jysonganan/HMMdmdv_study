@@ -11,36 +11,127 @@ n = 5000
 n1 = 100
 n2 = 100
 fdr = 0.1
-# nsim = 100
-significantList_length <- matrix(NA, 100, 5)
+nsim = 100
+
+
+pi1 = 0.4
+p = 0.2 #0.5, 0.8
+
+mu0 = 2
+sigma0 = 0.35
+sigma = 0.1
+
+library(MCMCpack)
+truePara_generation_1 <- function(n_state, pi1, p){
+  initProb = c(pi1, (1-pi1)/3, (1-pi1)/3, (1-pi1)/3)
+  transProb = matrix(NA, n_state, n_state)
+  for (i in 1:n_state){transProb[i,i] <- p}
+  
+  for (i in 1:4){
+    otherProb = rdirichlet(1, c(1,1,1))
+    if(i == 1){
+      transProb[i,2:4] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 2){
+      transProb[i,c(1,3,4)] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 3){
+      transProb[i,c(1,2,4)] = otherProb[1,] * (1 - transProb[i,i])
+    }
+    if (i == 4){
+      transProb[i,1:3] = otherProb[1,] * (1 - transProb[i,i])
+    }
+  }
+  
+  return(list(initProb, transProb))
+}
+
+
+
+data_generation_1 <- function(d, mu0, sigma0, sigma, n, n1, n2, initProb, transProb){
+  X<-matrix(NA, n, n1)
+  Y<-matrix(NA, n, n2)
+  Z<-rep(NA,n)
+  
+  Z[1]<-sample(1:4, 1, prob = initProb)
+  
+  for (i in 2:n){
+    Z[i]<-sample(1:4, 1, prob = transProb[Z[i-1],])
+  }
+
+
+  for (i in 1:n){
+    if(Z[i]==1)
+    { 
+      mu <- rnorm(1, mu0, sigma0)
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu,sqrt(sigma))
+    }
+    else if(Z[i]==2){
+      mu <- rnorm(1, mu0, sigma0)
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu + d,sqrt(sigma))
+    }
+    else if(Z[i]==3){
+      mu <- rnorm(1, mu0, sigma0)
+      X[i,]<-rnorm(n1,mu,sqrt(sigma))
+      Y[i,]<-rnorm(n2,mu,sqrt(10*sigma))
+    }
+    else{
+      mu <- rnorm(1, mu0, sigma0)
+      X[i,]<-rnorm(n1,mu,sqrt(sigma1))
+      Y[i,]<-rnorm(n2,mu+d,sqrt(10*sigma2))
+    }
+  }
+
+  A<-cbind(X,Y)
+  print('data generated!')
+  return(list(A, Z))
+}
+
+
+
+
+
+significantList_length <- matrix(NA, nsim, 5)
 significantList_length <- as.data.frame(significantList_length)
 colnames(significantList_length) <- c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat", "True non-null")
 
-FDR_tab <- matrix(NA, 100, 4)
+FDR_tab <- matrix(NA, nsim, 4)
 FDR_tab <- as.data.frame(FDR_tab)
 colnames(FDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-FNDR_tab <- matrix(NA, 100, 4)
+FNDR_tab <- matrix(NA, nsim, 4)
 FNDR_tab <- as.data.frame(FNDR_tab)
 colnames(FNDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Sensitivity_tab <- matrix(NA, 100, 4)
+Sensitivity_tab <- matrix(NA, nsim, 4)
 Sensitivity_tab <- as.data.frame(Sensitivity_tab)
 colnames(Sensitivity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Specificity_tab<- matrix(NA, 100, 4)
+Specificity_tab<- matrix(NA, nsim, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, 100)
+tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, nsim)
 
-for (i in 1:100){
-  true_para <- truePara_generation(4)
 
-  sim_alldata <- data_generation(true_para[[1]], true_para[[2]], true_para[[3]], true_para[[4]],
-                              n = n, n1 = n1, n2 = n2, true_para[[5]], true_para[[6]])
+
+
+
+
+for (i in 1:nsim){
+  true_para <- truePara_generation_1(4, pi1, p)
+
+  sim_alldata <- data_generation_1(d, mu0, sigma0, sigma, n, n1, n2, true_para[[1]], true_para[[2]])
   sim_data <- sim_alldata[[1]]
   sim_state <- sim_alldata[[2]]
+  
+  
+  
+  
+  
+  
   
   data_df <- remove_case3(dat = sim_data, mean_thresholdPV = 0.1, var_thresholdPV = 0.05, n1 = n1, n2 = n2)
   init_para_est <- init_est(dat_df = data_df, mean_thresholdPV = 0.05, var_thresholdPV = 0.1, n1 = n1, n2 = n2, n = n)
