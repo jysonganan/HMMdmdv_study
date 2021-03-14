@@ -42,34 +42,37 @@ library(locfdr)
 library(NHMMfdr)
 set.seed(2)
 
-significantList_length <- matrix(NA, 1000, 5)
+
+n = 1000
+n1 = 30
+n2 = 30
+fdr = 0.1
+
+significantList_length <- matrix(NA, n, 5)
 significantList_length <- as.data.frame(significantList_length)
 colnames(significantList_length) <- c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat", "True non-null")
-FDR_tab <- matrix(NA, 1000, 4)
+
+FDR_tab <- matrix(NA, n, 4)
 FDR_tab <- as.data.frame(FDR_tab)
 colnames(FDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-FNDR_tab <- matrix(NA, 1000, 4)
+FNDR_tab <- matrix(NA, n, 4)
 FNDR_tab <- as.data.frame(FNDR_tab)
 colnames(FNDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Sensitivity_tab <- matrix(NA, 1000, 4)
+Sensitivity_tab <- matrix(NA, n, 4)
 Sensitivity_tab <- as.data.frame(Sensitivity_tab)
 colnames(Sensitivity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Specificity_tab <- matrix(NA, 1000, 4)
+Sensitivity_tab <- matrix(NA, n, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
+tran_prob_sqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, n)
 
-for (i in 1000){
+for (i in 1:n){
   true_para <- truePara_generation(4)
-  ## varying
-  n = 1000
-  n1 = 30
-  n2 = 30
-  fdr = 0.1
-  
+
   sim_alldata <- data_generation(true_para[[1]], true_para[[2]], true_para[[3]], true_para[[4]],
                               n = n, n1 = n1, n2 = n2, true_para[[5]], true_para[[6]])
   sim_data <- sim_alldata[[1]]
@@ -86,12 +89,15 @@ for (i in 1000){
   HMM_resList <- runHMM_iters(emissions)
   
   ## MSE parameter estimates
-  
+  nu0_sqErr[i] <- (indep_para_est[5] - true_para[[1]])^2
+  var0_sqErr[i] <- (indep_para_est[6] - true_para[[2]])^2
+  k0_sqErr[i] <- (indep_para_est[7] - true_para[[3]])^2
+  mu0_sqErr[i] <- (indep_para_est[8] - true_para[[4]])^2
+  tran_prob_sqErr[i] <- (HMM_resList[[5]] - true_para[[6]])^2
   
   ## 1. accuracy concordance (clustering) (compare with DM+DV test threholds for 4 states)
-
-  
-  
+  result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], Z = sim_state, train = TRUE)
+  cluster_concordance_acc[i] <- result[[2]]
   
   ## 2. differential mean FDR control sensitivity.. (comparison)
   post_beta <- posterior_inference_FDR(HMM_resList[[6]], fdr_threshold = fdr)
@@ -178,8 +184,6 @@ for (i in 1000){
   Sensitivity_tab[i,] <- c(Sensitivity_HMMdmdv,Sensitivity_BH,Sensitivity_IndepStat,Sensitivity_HMMStat)
   Specificity_tab[i,] <- c(Specificity_HMMdmdv,Specificity_BH,Specificity_IndepStat,Specificity_HMMStat)
 }
-
-
 
 
 
