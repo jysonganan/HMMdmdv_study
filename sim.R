@@ -50,30 +50,30 @@ n = 1000
 n1 = 30
 n2 = 30
 fdr = 0.1
-
-significantList_length <- matrix(NA, n, 5)
+nsim = 100
+significantList_length <- matrix(NA, nsim, 5)
 significantList_length <- as.data.frame(significantList_length)
 colnames(significantList_length) <- c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat", "True non-null")
 
-FDR_tab <- matrix(NA, n, 4)
+FDR_tab <- matrix(NA, nsim, 4)
 FDR_tab <- as.data.frame(FDR_tab)
 colnames(FDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-FNDR_tab <- matrix(NA, n, 4)
+FNDR_tab <- matrix(NA, nsim, 4)
 FNDR_tab <- as.data.frame(FNDR_tab)
 colnames(FNDR_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Sensitivity_tab <- matrix(NA, n, 4)
+Sensitivity_tab <- matrix(NA, nsim, 4)
 Sensitivity_tab <- as.data.frame(Sensitivity_tab)
 colnames(Sensitivity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Specificity_tab<- matrix(NA, n, 4)
+Specificity_tab<- matrix(NA, nsim, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, n)
+tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, nsim)
 
-for (i in 1:n){
+for (i in 1:nsim){
   true_para <- truePara_generation(4)
 
   sim_alldata <- data_generation(true_para[[1]], true_para[[2]], true_para[[3]], true_para[[4]],
