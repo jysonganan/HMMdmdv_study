@@ -34,6 +34,9 @@ result <- posterior_inference(HMM_resList[[1]], HMM_resList[[2]], train = FALSE)
 
 
 
+source("/gpfs/scratch/jusong/util.R")
+library(HMMdmdv)
+
 #### simulation in the model setting
 
 ## check the MSE for each estimated parameters
@@ -68,7 +71,7 @@ Sensitivity_tab <- matrix(NA, n, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-tran_prob_sqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, n)
+tran_prob_sumsqErr = nu0_sqErr = var0_sqErr = k0_sqErr = mu0_sqErr = cluster_concordance_acc <- rep(NA, n)
 
 for (i in 1:n){
   true_para <- truePara_generation(4)
@@ -186,4 +189,6 @@ for (i in 1:n){
 }
 
 
+save("significantList_length", "FDR_tab", "FNDR_tab", "Sensitivity_tab", "Specificity_tab", "cluster_concordance_acc",
+     "nu0_sqErr", "var0_sqErr", "k0_sqErr", "mu0_sqErr", "tran_prob_sumsqErr", file = "/gpfs/scratch/jusong/HMMsim_1.RData")
 
