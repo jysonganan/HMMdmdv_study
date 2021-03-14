@@ -67,7 +67,7 @@ Sensitivity_tab <- matrix(NA, n, 4)
 Sensitivity_tab <- as.data.frame(Sensitivity_tab)
 colnames(Sensitivity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
-Sensitivity_tab <- matrix(NA, n, 4)
+Specificity_tab<- matrix(NA, n, 4)
 Specificity_tab <- as.data.frame(Specificity_tab)
 colnames(Specificity_tab) <-  c("HMMdmdv","BH-FDR", "IndepStat", "HMMStat")
 
