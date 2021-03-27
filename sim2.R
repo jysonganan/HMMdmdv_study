@@ -11,6 +11,7 @@ n = 1000
 n1 = 15
 n2 = 15
 fdr = 0.1
+niter = 1000
 nsim = 100
 
 
@@ -68,7 +69,7 @@ for (i in 1:nsim){
   
   emissions <- emission_probs(indep_para_est[5], indep_para_est[6], indep_para_est[7], indep_para_est[8], sim_data, n1 = n1, n2 = n2)
   
-  HMM_resList <- runHMM_iters(emissions)
+  HMM_resList <- runHMM_iters(emissions, niter = niter, n = n)
   
 
   ## 1. accuracy concordance (clustering) (compare with DM+DV test threholds for 4 states)
