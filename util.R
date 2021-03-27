@@ -103,7 +103,7 @@ data_generation_1 <- function(d, mu0, sigma0, sigma, n, n1, n2, initProb, transP
 ############################################################
 #### iterations, also output gamma = posterior probabilities
 ## rewrite runHMM--return(list(alpha, beta, iter, initPI, Tmat))
-runHMM_iters <- function(emissions){
+runHMM_iters <- function(emissions, niter, n){
   post <- emissions
   initPI <- rep(0.25, 4)
   Tmat <- matrix(0.25, 4, 4)
