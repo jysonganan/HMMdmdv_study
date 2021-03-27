@@ -88,9 +88,9 @@ for (i in 1:nsim){
   indep_para_est <- runEM(dat_df = data_df, n1 = n1, n2 = n2, init_para_est= init_para_est, niter = niter)
   
   emissions <- emission_probs(indep_para_est[5], indep_para_est[6], indep_para_est[7], indep_para_est[8], sim_data, n1 = n1, n2 = n2)
-  
-  HMM_resList <- runHMM_iters(emissions)
-  
+
+  HMM_resList <- runHMM_iters(emissions, niter = niter, n = n)
+
   ## MSE parameter estimates
   nu0_sqErr[i] <- (indep_para_est[5] - true_para[[1]])^2
   var0_sqErr[i] <- (indep_para_est[6] - true_para[[2]])^2
