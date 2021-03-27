@@ -50,6 +50,7 @@ n = 1000
 n1 = 30
 n2 = 30
 fdr = 0.1
+niter = 1000
 nsim = 100
 significantList_length <- matrix(NA, nsim, 5)
 significantList_length <- as.data.frame(significantList_length)
