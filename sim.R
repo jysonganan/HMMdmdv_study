@@ -17,7 +17,7 @@ emissions <- emission_probs(indep_para_est[5], indep_para_est[6], indep_para_est
 head(emissions, 10)
 
 
-HMM_resList <- runHMM_iters(emissions)
+HMM_resList <- runHMM_iters(emissions, niter = niter, n = n)
 post_beta <- posterior_inference_FDR(HMM_resList[[6]], fdr_threshold = 0.1)
 
 
