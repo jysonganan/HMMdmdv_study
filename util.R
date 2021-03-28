@@ -228,3 +228,64 @@ runHMM_iters <- function(emissions, niter, n){
   return(list(alpha, beta, iter, initPI, Tmat, gamma, initPI_iters, Tmat_iters, logProb_iters))
 }
 
+truePara_generation_2 <- function(n_state, pi1, p){
+  initProb = c(pi1, (1-pi1)/3, (1-pi1)/3, (1-pi1)/3)
+  transProb = matrix(NA, n_state, n_state)
+  for (i in 1:n_state){transProb[i,i] <- p}
+
+  for (i in 1:4){
+    otherProb = rdirichlet(1, c(1,1,1))
+    if(i == 1){
+      transProb[i,2:4] = otherProb[1,] * (1 - transProb[i,i])
+
+      tmp = min(transProb[i,2:4])
+      tmp_id =  which(transProb[i,2:4] == tmp)
+      tmp_id = c(2:4)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,4]
+      transProb[i,4] = tmp
+
+    }
+    if (i == 2){
+      transProb[i,c(1,3,4)] = otherProb[1,] * (1 - transProb[i,i])
+      tmp = max(transProb[i,c(1,3,4)])
+      tmp_id =  which(transProb[i,c(1,3,4)] == tmp)
+      tmp_id = c(1,3,4)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,1]
+      transProb[i,1] = tmp
+
+      tmp = min(transProb[i,c(1,3,4)])
+      tmp_id =  which(transProb[i,c(1,3,4)] == tmp)
+      tmp_id = c(1,3,4)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,4]
+      transProb[i,4] = tmp
+
+    }
+    if (i == 3){
+      transProb[i,c(1,2,4)] = otherProb[1,] * (1 - transProb[i,i])
+      tmp = max(transProb[i,c(1,2,4)])
+      tmp_id =  which(transProb[i,c(1,2,4)] == tmp)
+      tmp_id = c(1,2,4)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,1]
+      transProb[i,1] = tmp
+
+      tmp = min(transProb[i,c(1,2,4)])
+      tmp_id =  which(transProb[i,c(1,2,4)] == tmp)
+      tmp_id = c(1,2,4)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,4]
+      transProb[i,4] = tmp
+
+    }
+    if (i == 4){
+      transProb[i,1:3] = otherProb[1,] * (1 - transProb[i,i])
+      tmp = max(transProb[i,1:3])
+      tmp_id =  which(transProb[i,1:3] == tmp)
+      tmp_id = c(1:3)[tmp_id]
+      transProb[i,tmp_id] = transProb[i,1]
+      transProb[i,1] = tmp
+
+    }
+  }
+
+  return(list(initProb, transProb))
+}
+
