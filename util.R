@@ -289,3 +289,45 @@ truePara_generation_2 <- function(n_state, pi1, p){
   return(list(initProb, transProb))
 }
 
+  
+  
+  
+  
+data_generation_2 <- function(d, mu, sigma_var, n, n1, n2, initProb, transProb){
+  X<-matrix(NA, n, n1)
+  Y<-matrix(NA, n, n2)
+  Z<-rep(NA,n)
+  
+  Z[1]<-sample(1:4, 1, prob = initProb)
+  
+  for (i in 2:n){
+    Z[i]<-sample(1:4, 1, prob = transProb[Z[i-1],])
+  }
+
+
+  for (i in 1:n){
+    if(Z[i]==1)
+    { 
+      X[i,]<-rnorm(n1,mu[i],sqrt(sigma_var[i]))
+      Y[i,]<-rnorm(n2,mu[i],sqrt(sigma_var[i]))
+    }
+    else if(Z[i]==2){
+      X[i,]<-rnorm(n1,mu[i],sqrt(sigma_var[i]))
+      Y[i,]<-rnorm(n2,mu[i] + d,sqrt(sigma_var[i]))
+    }
+    else if(Z[i]==3){
+      X[i,]<-rnorm(n1,mu[i],sqrt(sigma_var[i]))
+      Y[i,]<-rnorm(n2,mu[i],sqrt(10*sigma_var[i]))
+    }
+    else{
+      X[i,]<-rnorm(n1,mu[i],sqrt(sigma_var[i]))
+      Y[i,]<-rnorm(n2,mu[i] + d,sqrt(10*sigma_var[i]))
+    }
+  }
+
+  A<-cbind(X,Y)
+  print('data generated!')
+  return(list(A, Z))
+}
+  
+
