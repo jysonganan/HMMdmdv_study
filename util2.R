@@ -280,8 +280,9 @@ runEM_L_BFGS_B <- function(dat_df, EM_threshold = 0.0001, n1, n2, init_para_est,
   i <- EM_para_est[1]
   theta_est <- EM_para_est[-1]
 
-  PI <- (1-init_para_est[3])*theta_est[1:3]
-  PI<-c(PI[1],PI[2],init_para_est[3],PI[3])
+  #PI <- (1-init_para_est[3])*theta_est[1:3]
+  #PI<-c(PI[1],PI[2],init_para_est[3],PI[3])
+  PI <- theta_est[1:3]
   nu<-theta_est[4]
   var<-theta_est[5]
   k<-theta_est[6]
