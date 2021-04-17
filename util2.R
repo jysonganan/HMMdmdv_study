@@ -1,6 +1,6 @@
 ## suppose only case 1,2,4:indepEM + HMM
 
-data_generation_2 <- function(d, mu, sigma_var, n, n1, n2, initProb, transProb){
+data_generation_2 <- function(d, mu, sigma_var, n, n1, n2, initProb, transProb, var_ratio = 10){
   X<-matrix(NA, n, n1)
   Y<-matrix(NA, n, n2)
   Z<-rep(NA,n)
@@ -24,7 +24,7 @@ data_generation_2 <- function(d, mu, sigma_var, n, n1, n2, initProb, transProb){
     }
     else{
       X[i,]<-rnorm(n1,mu[i],sqrt(sigma_var[i]))
-      Y[i,]<-rnorm(n2,mu[i] + d,sqrt(10*sigma_var[i]))
+      Y[i,]<-rnorm(n2,mu[i] + d,sqrt(var_ratio*sigma_var[i]))
     }
   }
 
