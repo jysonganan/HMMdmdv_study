@@ -331,3 +331,19 @@ data_generation_2 <- function(d, mu, sigma_var, n, n1, n2, initProb, transProb){
 }
   
 
+  
+truePara_generation <- function(n_state) 
+{
+    initProb = runif(n_state)
+    initProb = initProb/sum(initProb)
+    transProb = matrix(NA, n_state, n_state)
+    for (i in 1:n_state) {
+        transProb[i, ] = runif(n_state)
+        transProb[i, ] = transProb[i, ]/sum(transProb[i, ])
+    }
+    nu0 = runif(1, 4, 6)
+    var0 = runif(1, 18, 26)
+    k0 = sample(2:4, 1)
+    mu0 = runif(1, 0.5, 2)
+    return(list(nu0, var0, k0, mu0, initProb, transProb))
+}
