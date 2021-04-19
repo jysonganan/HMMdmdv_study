@@ -211,14 +211,14 @@ init_est <- function(dat_df, mean_thresholdPV, var_thresholdPV, n1, n2, n){
 runEM_L_BFGS_B_1 <- function(dat_df, EM_threshold = 0.0001, n1, n2, init_para_est, niter){
 
   init_para_est_1 <- rep(NA, 7)
-  init_para_est_1[4:7] <- init_para_est[4:7]
-  total <- init_para_est[1] + init_para_est[2] + init_para_est[4]
-  prop1 <- init_para_est[1]/total
-  prop2 <- init_para_est[2]/total
-  prop4 <- init_para_est[4]/total
-  init_para_est_1[1] <- prop1
-  init_para_est_1[2] <- prop2
-  init_para_est_1[3] <- prop4
+  init_para_est_1[1:7] <- init_para_est[1:7]
+  #total <- init_para_est[1] + init_para_est[2] + init_para_est[4]
+  #prop1 <- init_para_est[1]/total
+  #prop2 <- init_para_est[2]/total
+  #prop4 <- init_para_est[4]/total
+  #init_para_est_1[1] <- prop1
+  #init_para_est_1[2] <- prop2
+ # init_para_est_1[3] <- prop4
 
   theta <- matrix(NA, nrow = niter, ncol = 7)
   theta[1,]<-c(0.5,0.25,0.25,6,4,2,0.2)
